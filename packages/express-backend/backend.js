@@ -80,3 +80,50 @@ app.get('/users/:id', (req, res) => {
         res.send(result);
     }
 });
+
+const addUser = (user) => {
+    users['users_list'].push(user);
+    return user;
+}
+
+app.post('/users', (req, res) => {
+    const userToAdd = req.body;
+    addUser(userToAdd);
+    res.send();
+});
+
+const deleteUser = (id) => {
+    let result = findUserById(id); 
+    if (result === undefined) {
+        res.status(404).send('Resource not found.');
+    } else {
+        users['users_list'].pop(result);
+    }
+}
+
+app.delete('/users/:id', (req, res) => {
+    const id = req.params['id'];
+    deleteUser(id);
+    res.send();
+});
+
+const findUserByNameAndJob = (name, job) => { 
+    let namedUsers = users['users_list']
+        .filter( (user) => user['name'] === name); 
+    namedUsers = namedUsers
+    .filter( (user) => user['job'] === job); 
+    return namedUsers
+}   
+
+app.get('/users/:name/:job', (req, res) => {
+    const name = req.params['name'];
+    const job = req.params['job'];
+    if (name != undefined){
+        let result = findUserByNameAndJob(name, job);
+        result = {users_list: result};
+        res.send(result);
+    }
+    else{
+        res.send(users);
+    }
+});
