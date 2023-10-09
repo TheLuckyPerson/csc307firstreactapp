@@ -4,6 +4,7 @@ import cors from "cors";
 
 const app = express();
 const port = 8000;
+const MAX_ID = 10000;
 
 const users = { 
     users_list : [
@@ -34,6 +35,7 @@ const users = {
        }
     ]
  }
+
 
 app.use(cors());
 app.use(express.json());
@@ -88,6 +90,7 @@ const addUser = (user) => {
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
+    req.body.id = generateId()
     let user = addUser(userToAdd);
     if (user != null) {
         res.status(201).json(user);
@@ -129,3 +132,7 @@ app.get('/users/:name/:job', (req, res) => {
         res.send(users);
     }
 });
+
+const generateId = () => {
+    return Math.floor(Math.random() * MAX_ID);
+ }
