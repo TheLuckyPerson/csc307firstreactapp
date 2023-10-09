@@ -93,24 +93,38 @@ app.post('/users', (req, res) => {
     req.body.id = generateId()
     let user = addUser(userToAdd);
     if (user != null) {
-        res.status(201).json(user);
+        console.log("sent " + user)
+        res.status(201).send(user);
     }
 });
 
 const deleteUser = (id) => {
-    let result = findUserById(id); 
-    if (result === undefined) {
-        res.status(404).send('Resource not found.');
-    } else {
-        users['users_list'].pop(result);
-    }
+    let deleted = undefined;
+    users['users_list'] = users['users_list'].filter(user => {
+        console.log(user)
+        console.log(user.id)
+        if(user.id != id) {
+            deleted = user;
+            console.log("true");
+            return true;
+        }
+        console.log("false");
+
+        return false;
+    });
+
+    return deleted;
 }
 
 app.delete('/users/:id', (req, res) => {
     const id = req.params['id'];
-    deleteUser(id);
-    res.send();
-});
+    let user = deleteUser(id);
+    if (user === undefined) {
+        res.status(404).send('Resource not found.');
+    } else {
+        res.status(204).send('no content returned.');
+    }}
+);
 
 const findUserByNameAndJob = (name, job) => { 
     let namedUsers = users['users_list']
@@ -134,5 +148,5 @@ app.get('/users/:name/:job', (req, res) => {
 });
 
 const generateId = () => {
-    return Math.floor(Math.random() * MAX_ID);
+    return Math.floor(Math.random() * MAX_ID).toString();
  }

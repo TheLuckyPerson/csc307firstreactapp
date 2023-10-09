@@ -7,21 +7,49 @@ function MyApp() {
   const [characters, setCharacters] = useState([]);
 
   function removeOneCharacter (index) {
-      const updated = characters.filter((character, i) => {
-          return i !== index
-      });
-    setCharacters(updated);
+    let id = -1;
+    for(let i = 0; i < characters.length; i++) {
+      if(i == index) id = characters[i].id;
+    }
+    const updated = characters.filter((character, i) => {
+      return i !== index
+    });
+
+    console.log('id ' + id);
+    deleteUser(id)
+      .then(() => {
+        if (id != -1) setCharacters(updated);
+      })
+      .catch((error) => {
+        console.log(error);
+      }
+    )
+  }
+
+  function deleteUser(id) {
+    console.log('Http://localhost:8000/users/' + id);
+    const promise = fetch('Http://localhost:8000/users/' + id, {
+      method: "DELETE",
+    }).then((res) => {
+      console.log(res.status);
+      if(res.status !== 204) {
+        throw new Error('User deletion failed');
+      } else
+        return res.data;
+    })
+
+    return promise;
   }
 
   function updateList(person) { 
     postUser(person)
-      .then(() => {
-        console.log(person);
+      .then((res) => {
         if (person != null) setCharacters([...characters, person]);
       })
       .catch((error) => {
         console.log(error);
-      })
+      }
+    )
   }
 
   function fetchUsers() {
@@ -43,13 +71,14 @@ function MyApp() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(person),
-    }).then((res) => {
-      if(res.status !== 201) {
+    }).then((response) => {
+      if(response.status !== 201) {
         throw new Error('User insertion failed');
       } else
-        return res.json();
+        return response.json();
+    }).then((data) => {
+      person.id = data.id
     })
-
     return promise
   }
 
