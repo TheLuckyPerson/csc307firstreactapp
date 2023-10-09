@@ -88,8 +88,10 @@ const addUser = (user) => {
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
-    addUser(userToAdd);
-    res.send();
+    let user = addUser(userToAdd);
+    if (user != null) {
+        res.status(201).json(user);
+    }
 });
 
 const deleteUser = (id) => {
