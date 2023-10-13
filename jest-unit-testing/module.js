@@ -12,7 +12,9 @@ function containsNumbers(text)
 {
     for (let i = 0; i < text.length; i++) {
         if (!isNaN(text.charAt(i)))
-        return true;
+            return true;
     }
     return false;
 }
+
+export default { sum, div, containsNumbers };
